@@ -1,3 +1,11 @@
+import Foundation
+
+struct SmsStatus: Decodable {
+    var id: String
+    var status: String
+    var status_time: String
+}
+
 enum StatusReportCode: String, Codable {
     case DELIVERED
     case NOTDELIVERED
@@ -11,7 +19,6 @@ enum StatusReportCode: String, Codable {
 }
 
 struct StatusParams: Codable {
-    var _json: Bool?
     var msg_id: String
 
     init(msg_id: String) {
@@ -19,12 +26,15 @@ struct StatusParams: Codable {
     }
 }
 
-struct StatusResponse {
-    var report: StatusReportCode
-    var timestamp: String
+struct Status {
+   var client: ApiClient
 
-    init(report: StatusReportCode, timestamp: String) {
-        self.report = report
-        self.timestamp = timestamp
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    public func get(params: StatusParams) -> [SmsStatus] {
+        let res = client.request(endpoint: "status", method: "GET", payload: params)
+        return try! JSONDecoder().decode([SmsStatus].self, from: res!)
     }
 }

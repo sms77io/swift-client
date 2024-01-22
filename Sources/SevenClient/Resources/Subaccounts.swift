@@ -8,61 +8,37 @@ struct Subaccounts {
         }
 
         public func read() -> [Subaccount]? {
-            struct Params: Codable {
-                let action: String
-                
-                init() {
-                    self.action = "read"
-                }
-            }
-            let params = Params()
-
-
-            let res = client.request(endpoint: "subaccounts", method: "GET", payload: params)
-
+            struct Params: Codable {}
+            let res = client.request(endpoint: "subaccounts/read", method: "GET", payload: Params())
             return try! JSONDecoder().decode([Subaccount].self, from: res!)
         }
 
         public func delete(params: SubaccountsDeleteParams) -> SubaccountsDeleteResponse? {
-            let res = client.request(endpoint: "subaccounts", method: "POST", payload: params)
-
+            let res = client.request(endpoint: "subaccounts/delete", method: "POST", payload: params)
             return try! JSONDecoder().decode(SubaccountsDeleteResponse.self, from: res!)
         }
 
         public func create(params: SubaccountsCreateParams) -> SubaccountsCreateResponse? {
-            let res = client.request(endpoint: "subaccounts", method: "POST", payload: params)
-
+            let res = client.request(endpoint: "subaccounts/create", method: "POST", payload: params)
             return try! JSONDecoder().decode(SubaccountsCreateResponse.self, from: res!)
         }
 
         public func transferCredits(params: SubaccountsTransferCreditsParams) -> SubaccountsTransferCreditsResponse? {
-            let res = client.request(endpoint: "subaccounts", method: "POST", payload: params)
-
+            let res = client.request(endpoint: "subaccounts/transfer_credits", method: "POST", payload: params)
             return try! JSONDecoder().decode(SubaccountsTransferCreditsResponse.self, from: res!)
         }
 
         public func autoCharge(params: SubaccountsAutoChargeParams) -> SubaccountsAutoChargeResponse? {
-            let res = client.request(endpoint: "subaccounts", method: "POST", payload: params)
-
+            let res = client.request(endpoint: "subaccounts/update", method: "POST", payload: params)
             return try! JSONDecoder().decode(SubaccountsAutoChargeResponse.self, from: res!)
         }
     }
 
-class SubaccountsApiParams: Codable {
-    let action: String
-    
-    init(action: String) {
-        self.action = action
-    }
-}
-
 struct SubaccountsCreateParams: Codable {
-    let action: String
     var email: String
     var name: String
 
      init(email: String, name: String) {
-        self.action = "create"
         self.email = email
         self.name = name
     }
@@ -90,12 +66,10 @@ struct SubaccountsDeleteResponse: Decodable {
 }
 
 struct SubaccountsTransferCreditsParams: Codable {
-    let action: String
     var amount: Float
     var id: Int
 
     init(id: Int, amount: Float) {
-        self.action = "transfer_credits"
         self.id = id
         self.amount = amount
     }
@@ -107,13 +81,11 @@ struct SubaccountsTransferCreditsResponse: Decodable {
 }
 
 struct SubaccountsAutoChargeParams: Codable {
-    let action: String
     var amount: Float
     var id: Int
     var threshold: Float
 
     init(id: Int, amount: Float, threshold: Float) {
-        self.action = "update"
         self.id = id
         self.amount = amount
         self.threshold = threshold

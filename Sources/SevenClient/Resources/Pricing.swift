@@ -1,11 +1,21 @@
-enum PricingFormat: String, Codable {
-    case csv
-    case json
+import Foundation
+
+struct Pricing {
+   var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    public func get(params: PricingParams) -> PricingResponse? {
+        let res = client.request(endpoint: "pricing", method: "GET", payload: params)
+
+        return try! JSONDecoder().decode(PricingResponse.self, from: res!)
+    }
 }
 
 struct PricingParams: Codable {
     var country: String?
-    var format: PricingFormat?
 }
 
 struct CountryNetwork: Decodable {

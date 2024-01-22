@@ -1,8 +1,36 @@
-enum LookupType: String, Codable {
-    case cnam
-    case mnp
-    case format
-    case hlr
+import Foundation
+
+struct Lookup {
+    var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    public func rcs(params: LookupParams) -> [LookupRcsResponse] {
+        let res = client.request(endpoint: "lookup/rcs", method: "GET", payload: params)
+        return try! JSONDecoder().decode([LookupRcsResponse].self, from: res!)
+    }
+
+    public func cnam(params: LookupParams) -> [LookupCnamResponse] {
+        let res = client.request(endpoint: "lookup/cnam", method: "GET", payload: params)
+        return try! JSONDecoder().decode([LookupCnamResponse].self, from: res!)
+    }
+
+    public func format(params: LookupParams) -> [LookupFormatResponse] {
+        let res = client.request(endpoint: "lookup/format", method: "GET", payload: params)
+        return try! JSONDecoder().decode([LookupFormatResponse].self, from: res!)
+    }
+
+    public func hlr(params: LookupParams) -> [LookupHlrResponse] {
+        let res = client.request(endpoint: "lookup/hlr", method: "GET", payload: params)
+        return try! JSONDecoder().decode([LookupHlrResponse].self, from: res!)
+    }
+
+    public func mnp(params: LookupParams) -> [LookupMnpJsonResponse] {
+        let res = client.request(endpoint: "lookup/mnp", method: "GET", payload: params)
+        return try! JSONDecoder().decode([LookupMnpJsonResponse].self, from: res!)
+    }
 }
 
 enum HlrPortedCode: String, Decodable {
@@ -59,12 +87,10 @@ enum HlrValidNumberCode: String, Decodable {
 }
 
 struct LookupParams: Codable {
-    var type: LookupType
     var number: String
     var json: Bool?
 
-    init(type: LookupType, number: String) {
-        self.type = type
+    init(number: String) {
         self.number = number
     }
 }
@@ -79,6 +105,19 @@ struct LookupFormatResponse: Decodable {
     var international_formatted: String
     var network_type: NetworkType
     var success: Bool
+}
+
+struct LookupRcsResponse: Decodable {
+    var national: String
+    var carrier: String
+    var country_code: String
+    var country_iso: String
+    var country_name: String
+    var international: String
+    var international_formatted: String
+    var network_type: NetworkType
+    var success: Bool
+    var capabilities: Array<String>
 }
 
 struct LookupCnamResponse: Decodable {

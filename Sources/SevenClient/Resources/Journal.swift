@@ -1,3 +1,33 @@
+import Foundation
+
+struct Journal {
+    var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    public func inbound(params: JournalParams) -> [JournalInbound] {
+        let res = client.request(endpoint: "journal/inbound", method: "GET", payload: params)
+        return try! JSONDecoder().decode([JournalInbound].self, from: res!)
+    }
+
+    public func outbound(params: JournalParams) -> [JournalOutbound] {
+        let res = client.request(endpoint: "journal/outbound", method: "GET", payload: params)
+        return try! JSONDecoder().decode([JournalOutbound].self, from: res!)
+    }
+
+    public func voice(params: JournalParams) -> [JournalVoice] {
+        let res = client.request(endpoint: "journal/voice", method: "GET", payload: params)
+        return try! JSONDecoder().decode([JournalVoice].self, from: res!)
+    }
+
+    public func replies(params: JournalParams) -> [JournalReplies] {
+        let res = client.request(endpoint: "journal/replies", method: "GET", payload: params)
+        return try! JSONDecoder().decode([JournalReplies].self, from: res!)
+    }
+}
+
 struct JournalParams: Codable {
     var date_from: String?
     var date_to: String?
@@ -5,18 +35,6 @@ struct JournalParams: Codable {
     var limit: Int?
     var state: String?
     var to: String?
-    var type: JournalType
-
-    init(type: JournalType) {
-        self.type = type
-    }
-}
-
-enum JournalType: String, Codable {
-    case outbound
-    case inbound
-    case voice
-    case replies
 }
 
 protocol JournalBase: Codable {
